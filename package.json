@@ -3,8 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "antd": "^3.21.2",
+    "eslint-cli": "^1.1.1",
+    "node-sass": "^4.12.0",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
+    "react-excel-renderer": "^1.1.0",
     "react-scripts": "3.0.1"
   },
   "scripts": {
