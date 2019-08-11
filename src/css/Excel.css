@@ -5,6 +5,7 @@
 }
 
 .buttonsTrans{
+    color:black;
     display: flex;
     flex-direction: column;
     width: 35%;
@@ -12,6 +13,44 @@
 }
 
 .translateBtn{
+    margin-top:1rem !important;
+}
+
+button{
+	background: none;
+	color: inherit;
+	border: none;
+	padding: 0;
+	font: inherit;
+	cursor: pointer;
+	outline: inherit;
+}
+.ant-alert{
+    padding: 8px 31px 8px 37px !important;
+}
+
+.startBtn{
+    margin-top:2rem;
+}
+
+.mainWord{
     margin-top:1rem;
+    color:#1790FF;
+    font-size: 3.5rem;
+    margin-bottom: -0.1em;
+}
+.chooseFile{
+    padding:10px;
+    margin-left:100px;
+}
+
+.ant-alert-message{
+width:0px;
+height:0px;
+}
+
+.positiveScore sup{
+background: #52C41C !important;
+margin-top:1rem;
 }
 

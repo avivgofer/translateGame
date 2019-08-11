@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
-import { Popover, Button } from 'antd';
+import { Popover, Button, Alert, Badge } from 'antd';
 import {ExcelRenderer} from 'react-excel-renderer';
 import '../css/Excel.css';
+
+
 
 
 class Excel extends Component {
@@ -14,7 +16,9 @@ class Excel extends Component {
             flag:false,
             flag2:false,
             mainRandomNumber:0,
-            randomNumbers:[]
+            randomNumbers:[],
+            positiveScore:0,
+            negativeScore:0
         }   
     }
 
@@ -50,9 +54,20 @@ class Excel extends Component {
         }
         this.setState({
           mainRandomNumber: mainRandom,
-          randomNumbers: randomNumbers,
+          randomNumbers: this.shuffleArray(randomNumbers),
           flag2:true
         });
+      }
+
+      shuffleArray = (array) => {
+        let i = array.length - 1;
+        for (; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          const temp = array[i];
+          array[i] = array[j];
+          array[j] = temp;
+        }
+        return array;
       }
 
       randomNumber = () => {
@@ -60,24 +75,36 @@ class Excel extends Component {
       }
 
       game = () => {
-        console.log(this.state)
-        return <h1> { this.state.words[this.state.mainRandomNumber] } </h1>
+        return <h1 className={"mainWord"}> { this.state.words[this.state.mainRandomNumber] } </h1>
         
       }
 
       choose = (e) => {
-          const value = Number(e.target.value);
+          console.log(e.target.className);
+          const value = Number(e.currentTarget.value);
+          
           if(value === this.state.mainRandomNumber)
           {
-            e.target.className = 'translateBtn ant-btn-primary';
+            if(e.target.className === 'ant-alert-message')
+            {
+              e.currentTarget.firstElementChild.className = 'ant-alert ant-alert-success ant-alert-show-icon translateBtn';
+            }else{
+              e.target.className = 'ant-alert ant-alert-success ant-alert-show-icon translateBtn';
+            }
+            this.setState({
+              positiveScore: this.state.positiveScore + 1
+            })
+            this.start();
           }
           else
           {
-              e.target.className = 'translateBtn ant-btn-danger';
+            if(e.target.className === 'ant-alert-message')
+            {
+               e.currentTarget.firstElementChild.className = 'ant-alert-error ant-alert ant-alert-info ant-alert-show-icon translateBtn';
+            }else{
+              e.target.className = 'ant-alert-error ant-alert ant-alert-info ant-alert-show-icon translateBtn';
+            }
           }
-        // console.log(e.target.value);
-        // console.log(e.target);
-        // this.setState({selected:e.target.value});
       }
 
 
@@ -88,18 +115,31 @@ class Excel extends Component {
              {
             (!this.state.flag )
              ?
-             <input type="file" onChange={this.fileHandler.bind(this)} style={{"padding":"10px"}} />
+             <input className="chooseFile" type="file" onChange={this.fileHandler.bind(this)} />
              :
-             <Button type={'primary'} onClick={this.start.bind(this)}>Start Game!</Button>
+             ''
             }
             { this.state.flag2 ? this.game() : '' }
-            {/* { this.state.flag ? this.printTranslates() : '' } */}
             <div className="buttonsTrans">
               { this.state.randomNumbers.map(item => {
-                 return <Button className={'translateBtn'} key={item} onClick={this.choose.bind(this)} value={item}>{ this.state.translates[item] }</Button> ;
+                const uuidv1 = require('uuid/v1');
+                 return <button onClick={this.choose.bind(this)} key={uuidv1()} value={item}><Alert className={'translateBtn'} message={ this.state.translates[item]} type="info"  /></button>;
               })}
             </div>
-            
+            {(this.state.flag ) ?
+            <div>
+            <Button className={'startBtn'} type={'primary'} onClick={this.start.bind(this)}>
+            {(!this.state.flag2)?
+            'Start Game!' : 'Next!'}
+            </Button>
+            <div>
+            {(this.state.flag2) ?
+              <Badge className={'positiveScore'} showZero count={this.state.positiveScore} /> 
+              : ''
+            }
+            </div>
+            </div>
+            :''}
           </div>
         </div>
           );

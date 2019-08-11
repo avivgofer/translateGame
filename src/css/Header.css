@@ -1,7 +1,10 @@
 .header{
     width:100%;
     height: 4rem;
-    background-color:red;
+    background-color:#1790FF;
     line-height: 4rem;
     text-align: center;
+}
+.header h1{
+    color:white !important;
 }
