@@ -1,0 +1,17 @@
+.translateLi{
+    width:4rem;
+    height:2rem;
+    border: 1px solid black;
+}
+
+.buttonsTrans{
+    display: flex;
+    flex-direction: column;
+    width: 35%;
+    margin: auto;
+}
+
+.translateBtn{
+    margin-top:1rem;
+}
+

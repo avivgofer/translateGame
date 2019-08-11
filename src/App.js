@@ -1,16 +1,13 @@
-import React from 'react';
-import logo from './logo.svg';
-import Excel from './component/Excel'
-import Header from './component/Header'
+import React from 'react'
+import Excel from './components/Excel'
+import Header from './components/Header'
 import './App.css'
-import './App';
-import { PageHeader } from 'antd';
+import './App'; 
+import 'antd/dist/antd.css';
 
 
 
 function App() {
-
-
   return (
     <div className="App">
       <Header />
