@@ -2,11 +2,14 @@ import React, { Component } from 'react';
 import { Popover, Button, Alert, Badge } from 'antd';
 import {ExcelRenderer} from 'react-excel-renderer';
 import '../css/Excel.css';
+// import { VoicePlayer, VoiceRecognition } from 'react-voice-components'
+import SpeechRecognition from 'react-speech-recognition'
+import Sound from 'react-sound';
 
 
 
 
-class Excel extends Component {
+class Game extends Component {
     constructor(props){
         super(props)
         this.state = {
@@ -18,7 +21,9 @@ class Excel extends Component {
             mainRandomNumber:0,
             randomNumbers:[],
             positiveScore:0,
-            negativeScore:0
+            negativeScore:0,
+            tempFlaf:false,
+            alertClassName:'translateBtn'
         }   
     }
 
@@ -46,11 +51,26 @@ class Excel extends Component {
         });               
       }
 
-      start = () => {
+      start = (value) => {
+        
         var mainRandom = this.randomNumber();
         var randomNumbers = [mainRandom];
         for(let i=0; i<5; i++){
            randomNumbers.push(this.randomNumber());
+        }
+        //check if we came here from choosen word or next button
+        //chosen word have a number value 
+        
+        if(!(typeof(value) === 'number')){
+          this.setState({
+            soundPlayFlag:false
+          })
+        }
+        else{
+          this.setState({
+            positiveScore: this.state.positiveScore + 1,
+            soundPlayFlag:true
+          })
         }
         this.setState({
           mainRandomNumber: mainRandom,
@@ -74,56 +94,112 @@ class Excel extends Component {
         return  Math.floor(Math.random() * this.state.words.length);
       }
 
-      game = () => {
+      mainWord = () => {
         return <h1 className={"mainWord"}> { this.state.words[this.state.mainRandomNumber] } </h1>
-        
       }
 
-      choose = (e) => {
-          console.log(e.target.className);
+      choose = async (e) => {
           const value = Number(e.currentTarget.value);
-          
-          if(value === this.state.mainRandomNumber)
+          //if the choosen word is correct
+          if(value === this.state.mainRandomNumber) 
           {
+            
             if(e.target.className === 'ant-alert-message')
             {
+              // this.setState({
+              //   alertClassName:'ant-alert ant-alert-success ant-alert-show-icon translateBtn'
+              // })
               e.currentTarget.firstElementChild.className = 'ant-alert ant-alert-success ant-alert-show-icon translateBtn';
             }else{
+              // this.setState({
+              //   alertClassName:'ant-alert ant-alert-success ant-alert-show-icon translateBtn'
+              // })
               e.target.className = 'ant-alert ant-alert-success ant-alert-show-icon translateBtn';
             }
-            this.setState({
-              positiveScore: this.state.positiveScore + 1
-            })
-            this.start();
+            
+            // const delay = ms => new Promise(res => setTimeout(res, ms));
+            // await delay(5000);
+             setTimeout(this.start,400,value);
+             
+            //  this.start(value);
           }
-          else
+          //if the choosen word is wrong
+          else 
           {
             if(e.target.className === 'ant-alert-message')
             {
+              // this.setState({
+              //   alertClassName:'ant-alert-error ant-alert ant-alert-info ant-alert-show-icon translateBtn'
+              // })
                e.currentTarget.firstElementChild.className = 'ant-alert-error ant-alert ant-alert-info ant-alert-show-icon translateBtn';
             }else{
+              // this.setState({
+              //   alertClassName:'ant-alert-error ant-alert ant-alert-info ant-alert-show-icon translateBtn'
+              // })
               e.target.className = 'ant-alert-error ant-alert ant-alert-info ant-alert-show-icon translateBtn';
             }
           }
       }
 
+      playWinSound = () =>  {
+        this.setState({
+          soundPlayFlag:true
+        })
+      }
+
+      // playWinSound = () => {
+      //   if(this.state.tempFlaf)
+      // }
+  
+
+    //   <Sound
+    //   url="http://starmen.net/mother1/music/08%20-%20MOTHER%20-%20You%20Won.mp3"
+    //   playStatus={Sound.status.PLAYING}
+    //   playFromPosition={300 /* in milliseconds */}
+    //   onLoading={this.handleSongLoading}
+    //   onPlaying={this.handleSongPlaying}
+    //   onFinishedPlaying={this.handleSongFinishedPlaying}
+    // /> ;
+
 
     render() {
+      
+      const soundProps = {
+        url:"http://starmen.net/mother1/music/08%20-%20MOTHER%20-%20You%20Won.mp3",
+      playStatus: Sound.status.PLAYING,
+      playFromPosition: 300, /* in milliseconds */
+      onLoading: this.handleSongLoading,
+      onPlaying: this.handleSongPlaying,
+      onFinishedPlaying: this.handleSongFinishedPlaying
+    }
       return (
         <div>
           <div>
              {
             (!this.state.flag )
              ?
+             <div>
              <input className="chooseFile" type="file" onChange={this.fileHandler.bind(this)} />
+             {/* <Button onClick = {this.props.handler}>go to parent</Button> */}
+             {/* <VoicePlayer
+                play
+                text="React voice player demonstration"
+              /> */}
+              {/* <SpeechRecognition/> */}
+              {/* {this.playSound()} */}
+              <Button onClick={this.playWinSound}>playSound</Button>
+              {/* {(this.state.tempFlaf) ? <Sound {...soundProps}/> : '' } */}
+              {/* {this.playWinSound()} */}
+             </div>
              :
              ''
             }
-            { this.state.flag2 ? this.game() : '' }
+            { this.state.flag2 ? this.mainWord() : '' }
+            {(this.state.soundPlayFlag) ? <Sound {...soundProps}/> : '' }
             <div className="buttonsTrans">
               { this.state.randomNumbers.map(item => {
                 const uuidv1 = require('uuid/v1');
-                 return <button onClick={this.choose.bind(this)} key={uuidv1()} value={item}><Alert className={'translateBtn'} message={ this.state.translates[item]} type="info"  /></button>;
+                 return <button onClick={this.choose.bind(this)} key={uuidv1()} value={item}><Alert className={this.state.alertClassName} message={ this.state.translates[item]} type="info"  /></button>;
               })}
             </div>
             {(this.state.flag ) ?
@@ -146,5 +222,5 @@ class Excel extends Component {
         }
       }
       
-export default Excel;
+export default Game;
   
