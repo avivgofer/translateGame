@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Popover, Button, Alert, Badge } from 'antd';
 import {ExcelRenderer} from 'react-excel-renderer';
-import '../css/Excel.css';
+import '../css/Game.css';
 // import { VoicePlayer, VoiceRecognition } from 'react-voice-components'
 import SpeechRecognition from 'react-speech-recognition'
 import Sound from 'react-sound';
@@ -61,19 +61,15 @@ class Game extends Component {
         //check if we came here from choosen word or next button
         //chosen word have a number value 
         
-        if(!(typeof(value) === 'number')){
+        if((typeof(value) === 'number')){
           this.setState({
-            soundPlayFlag:false
-          })
-        }
-        else{
-          this.setState({
-            positiveScore: this.state.positiveScore + 1,
-            soundPlayFlag:true
+            soundPlayFlag:false,
+            positiveScore: this.state.positiveScore + 1
           })
         }
         this.setState({
           mainRandomNumber: mainRandom,
+          soundPlayFlag:false,
           randomNumbers: this.shuffleArray(randomNumbers),
           flag2:true
         });
@@ -98,28 +94,59 @@ class Game extends Component {
         return <h1 className={"mainWord"}> { this.state.words[this.state.mainRandomNumber] } </h1>
       }
 
-      choose = async (e) => {
+      getInputsByValue = (value) =>
+      {
+          var allInputs = document.getElementsByTagName("button");
+          var results = [];
+          for(var x=0;x<allInputs.length;x++)
+              if(allInputs[x].value == value)
+                  return allInputs[x];
+      }
+
+      giveSuccessStyle = (value) => {
+        const element = this.getInputsByValue(value);
+        // console.log(element);
+        // // console.log(value);
+        // debugger;
+        element.className = 'ant-alert ant-alert-success ant-alert-show-icon translateBtn';
+        element.children[0].className = '';
+        // if(e.target.className === 'ant-alert-message')
+        // {
+        //   // this.setState({
+        //   //   alertClassName:'ant-alert ant-alert-success ant-alert-show-icon translateBtn'
+        //   // })
+        //   e.currentTarget.firstElementChild.className = 'ant-alert ant-alert-success ant-alert-show-icon translateBtn';
+        // }else{
+        //   // this.setState({
+        //   //   alertClassName:'ant-alert ant-alert-success ant-alert-show-icon translateBtn'
+        //   // })
+        //   e.target.className = 'ant-alert ant-alert-success ant-alert-show-icon translateBtn';
+        // }
+      }
+
+      choose =  (e) => {
           const value = Number(e.currentTarget.value);
           //if the choosen word is correct
           if(value === this.state.mainRandomNumber) 
           {
-            
-            if(e.target.className === 'ant-alert-message')
-            {
-              // this.setState({
-              //   alertClassName:'ant-alert ant-alert-success ant-alert-show-icon translateBtn'
-              // })
-              e.currentTarget.firstElementChild.className = 'ant-alert ant-alert-success ant-alert-show-icon translateBtn';
-            }else{
-              // this.setState({
-              //   alertClassName:'ant-alert ant-alert-success ant-alert-show-icon translateBtn'
-              // })
-              e.target.className = 'ant-alert ant-alert-success ant-alert-show-icon translateBtn';
-            }
+            this.setState({ soundPlayFlag:true }, () => this.giveSuccessStyle(value));
+            // if(e.target.className === 'ant-alert-message')
+            // {
+            //   // this.setState({
+            //   //   alertClassName:'ant-alert ant-alert-success ant-alert-show-icon translateBtn'
+            //   // })
+            //   e.currentTarget.firstElementChild.className = 'ant-alert ant-alert-success ant-alert-show-icon translateBtn';
+            // }else{
+            //   // this.setState({
+            //   //   alertClassName:'ant-alert ant-alert-success ant-alert-show-icon translateBtn'
+            //   // })
+            //   e.target.className = 'ant-alert ant-alert-success ant-alert-show-icon translateBtn';
+            // }
             
             // const delay = ms => new Promise(res => setTimeout(res, ms));
             // await delay(5000);
-             setTimeout(this.start,400,value);
+      
+             setTimeout(this.start,1200,value);
              
             //  this.start(value);
           }
