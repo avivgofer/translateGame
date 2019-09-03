@@ -5,6 +5,11 @@ import '../css/Game.css';
 // import { VoicePlayer, VoiceRecognition } from 'react-voice-components'
 import SpeechRecognition from 'react-speech-recognition'
 import Sound from 'react-sound';
+import UIfx from 'uifx'
+import mp3File from '../sound/Tada.mp3'
+import Firebase from '../firebaseConfig'
+
+
 
 
 
@@ -129,7 +134,7 @@ class Game extends Component {
           //if the choosen word is correct
           if(value === this.state.mainRandomNumber) 
           {
-            this.setState({ soundPlayFlag:true }, () => this.giveSuccessStyle(value));
+            this.setState( this.playWinSound(), () => this.giveSuccessStyle(value));
             // if(e.target.className === 'ant-alert-message')
             // {
             //   // this.setState({
@@ -172,7 +177,9 @@ class Game extends Component {
         this.setState({
           soundPlayFlag:true
         })
+        this.forceUpdate();
       }
+
 
       // playWinSound = () => {
       //   if(this.state.tempFlaf)
@@ -187,7 +194,11 @@ class Game extends Component {
     //   onPlaying={this.handleSongPlaying}
     //   onFinishedPlaying={this.handleSongFinishedPlaying}
     // /> ;
+    beep  = () => (new UIfx({asset: mp3File}).play());
 
+    signOut = () => {Firebase.auth().signOut();
+   console.log(!!Firebase.auth().currentUser)
+  }
 
     render() {
       
@@ -197,8 +208,15 @@ class Game extends Component {
       playFromPosition: 300, /* in milliseconds */
       onLoading: this.handleSongLoading,
       onPlaying: this.handleSongPlaying,
-      onFinishedPlaying: this.handleSongFinishedPlaying
+      onFinishedPlaying: this.handleSongFinishedPlaying,
+      ignoreMobileRestrictions:true,
+      useHTML5Audio:true
     }
+    const beep  = new UIfx({asset: mp3File});
+
+
+
+
       return (
         <div>
           <div>
@@ -214,6 +232,8 @@ class Game extends Component {
               /> */}
               {/* <SpeechRecognition/> */}
               {/* {this.playSound()} */}
+              <Button onClick={beep.play}>Signup</Button>
+              <Button onClick={this.signOut}>SignOut</Button>
               <Button onClick={this.playWinSound}>playSound</Button>
               {/* {(this.state.tempFlaf) ? <Sound {...soundProps}/> : '' } */}
               {/* {this.playWinSound()} */}

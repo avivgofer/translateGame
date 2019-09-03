@@ -3,7 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@react-firebase/auth": "^0.2.9",
     "antd": "^3.21.4",
+    "firebase": "^6.5.0",
     "react": "^16.9.0",
     "react-dom": "^16.9.0",
     "react-excel-renderer": "^1.1.0",
@@ -11,6 +13,8 @@
     "react-sound": "^1.2.0",
     "react-speech-recognition": "^2.0.4",
     "react-voice-components": "^1.0.0",
+    "react-with-firebase-auth": "^1.0.4",
+    "uifx": "^2.0.3",
     "uuid": "^3.3.2"
   },
   "scripts": {
