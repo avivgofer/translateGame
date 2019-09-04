@@ -44,14 +44,16 @@ Firebase.auth().onAuthStateChanged(user => {
     this.setState({isLogin:true})
 
   } else {
+    if(this.state.isLogin)
     this.setState({isLogin:false})
   }
 })
     return (
       <div className="App">
-      {console.log(Firebase.auth().currentUser)}
+      {/* {console.log(Firebase.auth().currentUser)}
       {console.log(this.isLogged)}
-      {console.log(this.isConnect)}
+      {console.log(this.isConnect)} */}
+      {console.log(this.state.isLogin)}
       <Header />
      {
        (this.state.isLogin)
