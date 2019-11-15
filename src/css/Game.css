@@ -4,11 +4,20 @@
     border: 1px solid black;
 }
 
+.game{
+    margin-top:2rem !important;
+    border-top-right-radius:15px;
+    border-radius:15px;
+    margin:auto;
+    border:1px solid black;
+    width:30rem;
+}
+
 .buttonsTrans{
     color:black;
     display: flex;
     flex-direction: column;
-    width: 35%;
+    width: 65%;
     margin: auto;
 }
 

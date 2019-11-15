@@ -18,14 +18,32 @@ class Login extends Component {
       event.preventDefault()
       const email = this.emailInput.value;
       const password = this.passwordInput.value;
+      const firstName = this.firstNameInput.value;
+      const lastName = this.lastNameInput.value;
       //const firebase = firebaseApp.initializeApp(firebaseConfig);
-      Firebase.auth().createUserWithEmailAndPassword(email, password).catch(function(error) {
-        // Handle Errors here.
-        var errorCode = error.code;
-        var errorMessage = error.message;
-        // ...
-      }).then((res) => console.log(res));
-      
+      if(email,password,firstName,lastName){
+        Firebase.auth().createUserWithEmailAndPassword(email, password).catch(function(error) {
+          // Handle Errors here.
+          var errorCode = error.code;
+          var errorMessage = error.message;
+          // ...
+        }).then(
+          (res) =>
+          {
+            console.log(res)
+            let user =  Firebase.auth().currentUser;
+            user.updateProfile({
+              displayName: firstName + " " + lastName
+            }).then(function() {
+              // Update successful.
+            }).catch(function(error) {
+              // An error happened.
+            })
+          });
+      }else{
+        message.error(`something missing! `);
+      }
+        
       
   }
 

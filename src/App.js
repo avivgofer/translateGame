@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import Game from './components/Game'
 import Header from './components/Header'
-import Login from   './components/Login'
-import Firebase from  "./firebaseConfig";
+import Login from './components/Login'
+import Upload from './components/Upload'
+import Firebase from "./firebaseConfig";
 import "firebase/auth";
 import './App.css'
 import './App'; 
@@ -34,20 +35,42 @@ class App extends Component {
     this.state = { isLogin: false  }
    
   }
+  componentWillUpdate(){
+
+  
+  }
+  
+
+  
   
   
   render() {
 
-Firebase.auth().onAuthStateChanged(user => {
-  if (user) {
-    if(!this.state.isLogin)
-    this.setState({isLogin:true})
+    Firebase.auth().onAuthStateChanged(user => {
+   
+      if (user) {
 
-  } else {
-    if(this.state.isLogin)
-    this.setState({isLogin:false})
-  }
-})
+        if(!this.state.isLogin && user.photoURL === 'aaa'){
+          this.setState({
+            isLogin:true,
+            hasWords:true
+          })
+        }
+        if(!this.state.isLogin && user.photoURL  !== 'aaa'){
+          
+          this.setState({
+            isLogin:true,
+            hasWords:false
+          })
+        }
+    
+      } else {
+        if(this.state.isLogin)
+        this.setState({isLogin:false})
+      }
+    })
+
+
     return (
       <div className="App">
       {/* {console.log(Firebase.auth().currentUser)}
@@ -58,7 +81,11 @@ Firebase.auth().onAuthStateChanged(user => {
      {
        (this.state.isLogin)
        ?
-       <Game/>
+          (this.state.hasWords)
+          ?
+          <Game/>
+          :
+          <Upload/>
        :
        <Login/>
      }  

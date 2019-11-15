@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Popover, Button, Alert, Badge } from 'antd';
+import { Popover, Button, Alert, Badge, Icon } from 'antd';
 import {ExcelRenderer} from 'react-excel-renderer';
 import '../css/Game.css';
 // import { VoicePlayer, VoiceRecognition } from 'react-voice-components'
@@ -7,7 +7,8 @@ import SpeechRecognition from 'react-speech-recognition'
 import Sound from 'react-sound';
 import UIfx from 'uifx'
 import mp3File from '../sound/Tada.mp3'
-import Firebase from '../firebaseConfig'
+import firebaseApp from '../firebaseConfig'
+import ChooseFile from './Upload';
 
 
 
@@ -30,6 +31,25 @@ class Game extends Component {
             tempFlaf:false,
             alertClassName:'translateBtn'
         }   
+    }
+
+    componentWillMount(){
+      let userDisplayName =  firebaseApp.auth().currentUser.displayName;
+      firebaseApp.database().ref().once("value", snapshot => {
+
+        const val = snapshot.val()[userDisplayName];
+        let words = [];
+        Object.values(val.words).map((wordsVal)=> {
+          words.push({word:wordsVal.word})
+        });
+      
+
+        this.setState({
+          words:words,
+          translates:val.translates
+        })
+    
+      });
     }
 
     fileHandler = (event) => {
@@ -96,7 +116,7 @@ class Game extends Component {
       }
 
       mainWord = () => {
-        return <h1 className={"mainWord"}> { this.state.words[this.state.mainRandomNumber] } </h1>
+        return <h1 className={"mainWord"}> { this.state.words[this.state.mainRandomNumber].word } </h1>
       }
 
       getInputsByValue = (value) =>
@@ -174,6 +194,7 @@ class Game extends Component {
       }
 
       playWinSound = () =>  {
+        debugger
         this.setState({
           soundPlayFlag:true
         })
@@ -196,8 +217,8 @@ class Game extends Component {
     // /> ;
     beep  = () => (new UIfx({asset: mp3File}).play());
 
-    signOut = () => {Firebase.auth().signOut();
-   console.log(!!Firebase.auth().currentUser)
+    signOut = () => {firebaseApp.auth().signOut();
+   console.log(!!firebaseApp.auth().currentUser)
   }
 
     render() {
@@ -218,29 +239,15 @@ class Game extends Component {
 
 
       return (
-        <div>
+        <div className={"game"}>
           <div>
-             {
-            (!this.state.flag )
-             ?
-             <div>
-             <input className="chooseFile" type="file" onChange={this.fileHandler.bind(this)} />
-             {/* <Button onClick = {this.props.handler}>go to parent</Button> */}
-             {/* <VoicePlayer
-                play
-                text="React voice player demonstration"
-              /> */}
-              {/* <SpeechRecognition/> */}
-              {/* {this.playSound()} */}
-              <Button onClick={beep.play}>Signup</Button>
-              <Button onClick={this.signOut}>SignOut</Button>
-              <Button onClick={this.playWinSound}>playSound</Button>
-              {/* {(this.state.tempFlaf) ? <Sound {...soundProps}/> : '' } */}
-              {/* {this.playWinSound()} */}
-             </div>
-             :
-             ''
-            }
+          <div className="icons-list">
+            <Icon type="check-circle" theme="twoTone" twoToneColor="#52c41a" />
+            <Icon type="check-circle" theme="twoTone" twoToneColor="#52c41a" />
+            <Icon type="check-circle" theme="twoTone" twoToneColor="#52c41a" />
+          </div>
+            
+            {/* <Button onClick={this.playWinSound}>playSound</Button> */}
             { this.state.flag2 ? this.mainWord() : '' }
             {(this.state.soundPlayFlag) ? <Sound {...soundProps}/> : '' }
             <div className="buttonsTrans">
@@ -249,7 +256,7 @@ class Game extends Component {
                  return <button onClick={this.choose.bind(this)} key={uuidv1()} value={item}><Alert className={this.state.alertClassName} message={ this.state.translates[item]} type="info"  /></button>;
               })}
             </div>
-            {(this.state.flag ) ?
+            {(!this.state.flag ) ?
             <div>
             <Button className={'startBtn'} type={'primary'} onClick={this.start.bind(this)}>
             {(!this.state.flag2)?
@@ -263,7 +270,8 @@ class Game extends Component {
             </div>
             </div>
             :''}
-          </div>
+          </div>{"sdfsdf"}
+          {/* <Button onClick={this.signOut}>SignOut</Button> */}
         </div>
           );
         }
