@@ -1,23 +1,26 @@
 import React, { Component } from 'react';
-import '../css/Header.css'
+import '../css/GameOver'
 
-class Header extends Component {
+
+
+
+class GameOver extends Component {
+  
     constructor(props){
         super(props)
         this.state = {
-          
-        }   
+        }
     }
-
-
     render() {
+   
+
       return (
-        <div className="header">
-            <h1>  Translate Game</h1>
+        <div className="GameOver">
+        
         </div>
           );
         }
       }
       
-export default Header;
+export default GameOver;
   

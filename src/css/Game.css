@@ -6,18 +6,58 @@
 
 .game{
     margin-top:2rem !important;
-    border-top-right-radius:15px;
     border-radius:15px;
     margin:auto;
-    border:1px solid black;
-    width:30rem;
+    width:28rem;
+    height:36rem;
+    -webkit-box-shadow: 0px 1px 20px 0px rgba(0,0,0,0.55);
+    -moz-box-shadow: 0px 1px 20px 0px rgba(0,0,0,0.55);
+    box-shadow: 0px 1px 20px 0px rgba(0,0,0,0.55);
 }
 
-.buttonsTrans{
+.game .thinking{
+ margin-top:50%;
+}
+.gameHeader{
+    width:100%;
+    border-top-right-radius:15px;
+    border-top-left-radius:15px;
+    background-color: #1790FF;
+    height: 2rem;
+    display: inline-flex;
+    color:white;
+}
+.gameHeader i{
+    float:left;
+}
+.gameHeader svg{
+    width:1.5rem;
+    height:1.5rem;
+    margin:0.25rem;
+    margin-left:0.4rem;
+    margin-right:0.4rem;
+}
+.lifes{
+    width:25%;
+}
+.displayName{
+    width:50%;
+    font-size:1.2rem;
+}
+.bestScore{
+    width:25%;
+    line-height: 0.9rem;
+}
+
+.bestScoreTitle{
+    vertical-align: -0.5rem 
+}
+
+.gameWords{
     color:black;
     display: flex;
     flex-direction: column;
-    width: 65%;
+    width: 80%;
     margin: auto;
 }
 

@@ -32,7 +32,7 @@ var isLogged = false;
 class App extends Component {
   constructor(props) {
     super(props);
-    this.state = { isLogin: false  }
+    this.state = { isLogin: false, authChecked: false  }
    
   }
   componentWillUpdate(){
@@ -47,26 +47,27 @@ class App extends Component {
   render() {
 
     Firebase.auth().onAuthStateChanged(user => {
-   
       if (user) {
 
         if(!this.state.isLogin && user.photoURL === 'aaa'){
           this.setState({
             isLogin:true,
-            hasWords:true
+            hasWords:true,
+            authChecked:true
           })
         }
         if(!this.state.isLogin && user.photoURL  !== 'aaa'){
           
           this.setState({
             isLogin:true,
-            hasWords:false
+            hasWords:false,
+            authChecked:true
           })
         }
     
       } else {
         if(this.state.isLogin)
-        this.setState({isLogin:false})
+        this.setState({isLogin:false,authChecked:true})
       }
     })
 
@@ -79,15 +80,19 @@ class App extends Component {
       {console.log(this.state.isLogin)}
       <Header />
      {
-       (this.state.isLogin)
+       (this.state.authChecked)
        ?
-          (this.state.hasWords)
+          (this.state.isLogin)
           ?
-          <Game/>
+              (this.state.hasWords)
+              ?
+              <Game/>
+              :
+              <Upload/>
           :
-          <Upload/>
-       :
-       <Login/>
+          <Login/>
+      :
+      ''
      }  
      </div>
     );
