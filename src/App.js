@@ -33,22 +33,16 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = { isLogin: false, authChecked: false  }
-   
+    this.click = this.click.bind(this);
   }
   componentWillUpdate(){
 
   
   }
-  
 
-  
-  
-  
-  render() {
-
+  validateLogin(){
     Firebase.auth().onAuthStateChanged(user => {
       if (user) {
-
         if(!this.state.isLogin && user.photoURL === 'aaa'){
           this.setState({
             isLogin:true,
@@ -66,22 +60,30 @@ class App extends Component {
         }
     
       } else {
-        if(this.state.isLogin)
         this.setState({isLogin:false,authChecked:true})
       }
     })
+  }
 
+  componentDidMount(){
+   this.validateLogin();
+    
+  }
+
+  click(){
+  }
+
+  
+  
+  
+  render() {
+    
 
     return (
       <div className="App">
-      {/* {console.log(Firebase.auth().currentUser)}
-      {console.log(this.isLogged)}
-      {console.log(this.isConnect)} */}
-      {console.log(this.state.isLogin)}
       <Header />
      {
-       (this.state.authChecked)
-       ?
+       
           (this.state.isLogin)
           ?
               (this.state.hasWords)
@@ -90,9 +92,12 @@ class App extends Component {
               :
               <Upload/>
           :
-          <Login/>
-      :
-      ''
+              (this.state.authChecked)
+              ?
+              <Login/>
+              :
+              ''
+      
      }  
      </div>
     );

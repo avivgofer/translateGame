@@ -6,6 +6,10 @@ class GoHome extends Component {
         super(props)
         this.state = {}
      }
+
+     componentDidMount(){
+       
+     }
     render() {
       return (
         <div className={"thinking"}>

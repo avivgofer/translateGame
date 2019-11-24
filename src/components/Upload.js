@@ -3,6 +3,7 @@ import { Upload, Icon, message, Button } from 'antd';
 import {ExcelRenderer} from 'react-excel-renderer';
 import firebaseApp from '../firebaseConfig';
 import { throwStatement } from '@babel/types';
+import '../css/Upload.css';
 
 
 
@@ -12,6 +13,7 @@ class ChooseFile extends Component {
     constructor(props){
         super(props)
         this.state = {
+          bestScore:0
         }
         this.click = this.click.bind(this);
         this.save = this.save.bind(this);
@@ -28,11 +30,9 @@ class ChooseFile extends Component {
       var globalThis = this;
       firebaseApp.database().ref(user.displayName).set(this.state)
         .then((res) => {
-         console.log('saved');
          user.updateProfile({
             photoURL:'aaa'
          }).then(function() {
-           console.log('excel save')
            globalThis.reload();
            // Update successful.
          }).catch(function(error) {
@@ -66,7 +66,6 @@ class ChooseFile extends Component {
     onChange = (info) => {
       const { status } = info.file;
       if (status !== 'uploading') {
-        console.log(info.file, info.fileList);
       }
       if (status === 'done') {
         message.success(`${info.file.name} file uploaded successfully.`);
@@ -88,18 +87,22 @@ class ChooseFile extends Component {
 
       return (
         <div>
-          <button onClick={this.click}>bla</button>
-          <Button onClick={this.save}>save</Button>
-           <Dragger {...props} onChange={this.onChange}>
-            <p className="ant-upload-drag-icon">
-              <Icon type="inbox" />
-            </p>
-            <p className="ant-upload-text">Click or drag file to this area to upload</p>
-            <p className="ant-upload-hint">
-              Support for a single or bulk upload. Strictly prohibit from uploading company data or other
-              band files
-            </p>
-           </Dragger>
+          <span className="explanition">
+          Go to <a href="https://translate.google.co.il/?hl=iw#view=saved">Google transate saved word </a> 
+          and export your excel file.
+          </span>
+          <div className="dragger">
+            <Dragger {...props} onChange={this.onChange}>
+              <p className="ant-upload-drag-icon">
+                <Icon type="inbox" />
+              </p>
+              <p className="ant-upload-text">Click or drag your <br/> Google translate saved word excel file</p>
+              <p className="ant-upload-hint">
+                for support - aviv.gofer@gmail.com
+              </p>
+            </Dragger>
+            <Button className="uploadSaveBtn" onClick={this.save}>save</Button>
+          </div>
         </div>
           );
         }

@@ -23,20 +23,22 @@ class Login extends Component {
       //const firebase = firebaseApp.initializeApp(firebaseConfig);
       if(email,password,firstName,lastName){
         Firebase.auth().createUserWithEmailAndPassword(email, password).catch(function(error) {
+   
           // Handle Errors here.
           var errorCode = error.code;
           var errorMessage = error.message;
+          message.error(errorMessage);
           // ...
         }).then(
           (res) =>
           {
-            console.log(res)
             let user =  Firebase.auth().currentUser;
             user.updateProfile({
               displayName: firstName + " " + lastName
             }).then(function() {
               // Update successful.
             }).catch(function(error) {
+              
               // An error happened.
             })
           });
@@ -58,7 +60,7 @@ class Login extends Component {
         // Handle Errors here.
         var errorCode = error.code;
         var errorMessage = error.message;
-        console.log(errorMessage);
+        message.error(errorMessage);
         // ...
       }).then((res) => console.log(res));
 

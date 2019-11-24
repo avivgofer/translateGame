@@ -9,19 +9,33 @@
     border-radius:15px;
     margin:auto;
     width:28rem;
-    height:36rem;
     -webkit-box-shadow: 0px 1px 20px 0px rgba(0,0,0,0.55);
     -moz-box-shadow: 0px 1px 20px 0px rgba(0,0,0,0.55);
     box-shadow: 0px 1px 20px 0px rgba(0,0,0,0.55);
 }
-
 .game .thinking{
  margin-top:50%;
+}
+.a{
+    min-height: 19rem;
+    max-height: 33rem;
+    padding-bottom:1rem;
 }
 .gameHeader{
     width:100%;
     border-top-right-radius:15px;
     border-top-left-radius:15px;
+    background-color: #1790FF;
+    height: 2rem;
+    display: inline-flex;
+    color:white;
+}
+.gameFooter{
+    padding-bottom: 1rem;
+
+    width:100%;
+    border-bottom-right-radius:15px;
+    border-bottom-left-radius:15px;
     background-color: #1790FF;
     height: 2rem;
     display: inline-flex;
@@ -37,10 +51,12 @@
     margin-left:0.4rem;
     margin-right:0.4rem;
 }
+.speechIcon{
+}
 .lifes{
     width:25%;
 }
-.displayName{
+.timer{
     width:50%;
     font-size:1.2rem;
 }
@@ -51,6 +67,10 @@
 
 .bestScoreTitle{
     vertical-align: -0.5rem 
+}
+
+.failChoose{
+    background-color: red !important;
 }
 
 .gameWords{
@@ -85,7 +105,19 @@ button{
 .mainWord{
     margin-top:0rem;
     color:#1790FF;
-    font-size: 3.5rem;
+    font-size: 2.7rem;
+    margin-bottom: -0.1em;
+}
+.longMainWord{
+    margin-top:0rem;
+    color:#1790FF;
+    font-size: 2.2rem;
+    margin-bottom: -0.1em;
+}
+.veryLongMainWord{
+    margin-top:0rem;
+    color:#1790FF;
+    font-size: 1.8rem;
     margin-bottom: -0.1em;
 }
 .chooseFile{
@@ -102,4 +134,32 @@ height:0px;
 background: #52C41C !important;
 margin-top:1rem;
 }
+.displayName{
+    padding-top:2px;
+    width:50%;
+    text-align: left;
+    padding-left:10px;
+}
+.signOut{
+    padding-top:2px;
+    width:50%;
+    text-align:right;
+    padding-right:10px;
+}
 
+
+@media screen and (max-width: 650px) {
+   .game{
+       width:21rem !important;
+   }
+   .App{
+    width: 100%;
+   }
+   .mainWord{
+       font-size:1.7rem;
+   }
+   .gameHeader svg {
+    width: 0.9rem;
+    height: 1.6rem;
+  }
+}

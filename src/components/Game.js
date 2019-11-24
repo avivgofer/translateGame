@@ -7,13 +7,17 @@ import SpeechRecognition from 'react-speech-recognition'
 import Sound from 'react-sound';
 import UIfx from 'uifx'
 import winningSound from '../sound/Tada.mp3'
-import failSound from '../sound/buzzer.mp3'
 import gameoverSound from '../sound/trombone.mp3'
 import firebaseApp from '../firebaseConfig'
 import ChooseFile from './Upload';
 import Thinking from './Thinking';
+import GameOver from './GameOver'
+import { Statistic, Row, Col } from 'antd';
 
 
+
+
+const { Countdown } = Statistic;
 
 
 
@@ -34,9 +38,13 @@ class Game extends Component {
             tempFlaf:false,
             alertClassName:'translateBtn',
             gameReady:false,
-            livesCounter:3
+            livesCounter:3,
+            deadline:Date.now() + 1024 * 30,
+            gameOver:false
         }   
         this.getLives = this.getLives.bind(this);
+        this.click = this.click.bind(this);
+        this.speech = this.speech.bind(this);
     }
 
     componentWillMount(){
@@ -48,14 +56,23 @@ class Game extends Component {
         Object.values(val.words).map((wordsVal)=> {
           words.push({word:wordsVal.word})
         });
-      
-        
         this.setState({
           words:words,
           translates:val.translates,
-          userDisplayName:userDisplayName
+          userDisplayName:userDisplayName,
+          bestScore:val.bestScore
         },() => this.start());
       });
+    }
+
+
+    componentDidUpdate () {
+    }
+
+    speech(){
+      let mainWord = this.state.words[this.state.mainRandomNumber].word;
+      var msg = new SpeechSynthesisUtterance(mainWord);
+      window.speechSynthesis.speak(msg);
     }
 
     fileHandler = (event) => {
@@ -82,8 +99,15 @@ class Game extends Component {
         });               
       }
 
+      again = () => {
+        this.setState({
+          gameOver:false,
+          livesCounter:3,
+          positiveScore:0
+        },this.start)
+      }
+
       start = (value) => {
-        
         var mainRandom = this.randomNumber();
         var randomNumbers = [mainRandom];
         for(let i=0; i<5; i++){
@@ -104,7 +128,8 @@ class Game extends Component {
           soundFailFlag:false,
           randomNumbers: this.shuffleArray(randomNumbers),
           flag2:true,
-          gameReady:true
+          gameReady:true,
+          deadline:Date.now() + 1024 * 30,
         });
       }
 
@@ -123,7 +148,16 @@ class Game extends Component {
         return  Math.floor(Math.random() * this.state.words.length);
       }
 
-      getMainWord = () => {
+      
+
+      getMainWordJsx = () => {
+        let mainWord = this.state.words[this.state.mainRandomNumber].word;
+        if(mainWord.length > 16){
+          return <h1 className={"veryLongMainWord"} key="mainWord"> { this.state.words[this.state.mainRandomNumber].word } </h1>
+        }
+        if(mainWord.length > 11){
+          return <h1 className={"longMainWord"} key="mainWord"> { this.state.words[this.state.mainRandomNumber].word } </h1>
+        }
         return <h1 className={"mainWord"} key="mainWord"> { this.state.words[this.state.mainRandomNumber].word } </h1>
       }
 
@@ -143,16 +177,11 @@ class Game extends Component {
       }
 
       giveFailStyle = (value) => {
-        this.setState({
-          livesCounter : this.state.livesCounter-1
-        })
         const element = this.getInputsByValue(value);
-            if(element.className === 'ant-alert-message')
-            {
-              element.children[0].className = 'ant-alert-error ant-alert ant-alert-info ant-alert-show-icon translateBtn';
-            }else {
-              element.className = 'ant-alert-error ant-alert ant-alert-info ant-alert-show-icon translateBtn';
-            }
+        if(!!element){
+          element.className = '';
+          element.firstElementChild.className = 'ant-alert ant-alert-error ant-alert-no-icon translateBtn';
+        }
       }
 
       choose =  (e) => {
@@ -167,25 +196,48 @@ class Game extends Component {
           else 
           {
          
-            this.setState( this.playFailSound(), () => this.giveFailStyle(value));
-          
+            this.setState({
+              livesCounter : this.reduceLives()
+            }, () => this.giveFailStyle(value));
           }
+      }
+
+      reduceLives = () => {
+        let lives = this.state.livesCounter;
+        if(lives < 2)
+        {
+          this.setState( this.playWinSound(), () => console.log('g'));
+            
+            this.setState({
+              gameOver:true
+            });
+            if(this.state.positiveScore > this.state.bestScore)
+            {
+              this.setState({
+                bestScore:this.state.positiveScore
+              })
+              var updates = {bestScore: this.state.positiveScore, words:this.state.words, translates:this.state.translates}
+             firebaseApp.database().ref(this.state.userDisplayName).update(updates);
+            }
+          
+        }
+        return lives - 1;
       }
 
       playWinSound = () =>  {
         this.setState({
           soundWinningFlag:true
-        })
-        this.forceUpdate();
+        },this.forceUpdate())
+        
       }
 
 
       playFailSound = () =>  {
         this.setState({
           soundFailFlag:true
-        })
-        this.forceUpdate();
-        setTimeout(() => this.setState({soundFailFlag:false}),3000);
+        },this.forceUpdate())
+       
+        // setTimeout(() => this.setState({soundFailFlag:false}),3000);
       }
 
       getLives = () => {
@@ -197,7 +249,7 @@ class Game extends Component {
       }
 
       getTranslates = () => {
-        let jsx = [this.getMainWord()];
+      let jsx = [this.getMainWordJsx(),<button onClick={this.speech}><Icon className="speechIcon" type="sound" /></button>];
         this.state.randomNumbers.map(item => {
           const uuidv1 = require('uuid/v1');
            jsx.push(<button onClick={this.choose.bind(this)} key={uuidv1()} value={item}><Alert className={this.state.alertClassName} message={ this.state.translates[item]} type="info"  /></button>); 
@@ -205,9 +257,32 @@ class Game extends Component {
         return jsx;
       }
 
+      onFinish = () => {
+        this.setState({
+          livesCounter:this.reduceLives(),
+        },this.start);
+        console.log('finish');
+      }
+
     beep  = () => (new UIfx({asset: winningSound}).play());
 
     signOut = () => {firebaseApp.auth().signOut()}
+
+    click(){
+      if(this.state.failSound)
+      {
+        this.setState({
+          failSound:false
+        },this.forceUpdate);
+      }else{
+        this.setState({
+          failSound:true
+        },this.forceUpdate);
+      }
+      
+    }
+
+    forceUpdate = () => this.setState({});
 
     render() {
       
@@ -221,16 +296,7 @@ class Game extends Component {
       ignoreMobileRestrictions:false,
       useHTML5Audio:true
     }
-    const soundFailProps = {
-      url:"http://www.sounds.beachware.com/2illionzayp3may/zwvyaz/BUZZER.mp3",
-    playStatus: Sound.status.PLAYING,
-    playFromPosition: 300, /* in milliseconds */
-    onLoading: this.handleSongLoading,
-    onPlaying: this.handleSongPlaying,
-    onFinishedPlaying: this.handleSongFinishedPlaying,
-    ignoreMobileRestrictions:false,
-    useHTML5Audio:true
-  }
+    
     const beep  = new UIfx({asset: winningSound});
 
 
@@ -238,44 +304,67 @@ class Game extends Component {
 
       return (
         <div className={"game"}>
-          <div>
           <div className="gameHeader">
               <div className="lifes">
                 {this.getLives()}  
               </div>
-              <div className="displayName">
-                {this.state.userDisplayName}
+              <div className="timer">
+                {/*  */}
+                {
+                  (this.state.gameReady && !this.state.gameOver) 
+                  ?
+                  <Countdown format={'mm:ss'} value={this.state.deadline} onFinish={this.onFinish} />
+                  :
+                  <Countdown format={'mm:ss'} value={200000} onFinish={this.onFinish} />
+                }
               </div>
               <div className="bestScore">
                 <span className="bestScoreTitle">
-                Best: 54
+                Best: {this.state.bestScore}
                 </span>
                 <br/>
               </div>
           </div>
             
-            {(this.state.soundWinningFlag) ? <Sound {...soundWinProps}/> : '' }
-            {(this.state.soundFailFlag) ? <Sound {...soundFailProps}/> : '' }
+            
             {
             (this.state.gameReady)
             ?
-              <div>
-                <div className="gameWords">
-                  {this.getTranslates()}
-                </div>
-                <div>
-                  <Button className={'startBtn'} type={'primary'} onClick={this.start.bind(this)}>
-                  Next!
-                  </Button>
-                </div>
-                <div>
-                  <Badge className={'positiveScore'}  showZero count={this.state.positiveScore} /> 
-                </div>
-              </div>
+                (!this.state.gameOver)
+                ?
+                  <div className="a">
+                    <div className="gameWords">
+                      {(this.state.soundWinningFlag) ? <Sound {...soundWinProps}/> : '' }
+                      {this.getTranslates()}
+                    </div>
+                    <div>
+                      <Button className={'startBtn'} type={'primary'} onClick={this.start.bind(this)}>
+                      Next!
+                      </Button>
+                    </div>
+                    <div>
+                      <Badge className={'positiveScore'}  showZero count={this.state.positiveScore} /> 
+                    </div>
+                  </div>
+                :
+                <GameOver playAgain={this.again} positiveScore={this.state.positiveScore}/>
             :
+             <div className="a">
              <Thinking/>
+             </div>
+             
            }
+           <div className="gameFooter">
+              <div className="displayName">
+                {this.state.userDisplayName}
+              </div>
+              <div className="signOut">
+                <button onClick={this.signOut}>
+                sign out
+                </button>
+              </div>
           </div>
+          
         </div>
           );
         }
